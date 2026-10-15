@@ -18,8 +18,8 @@ options = vision.HandLandmarkerOptions(base_options=base_options,running_mode=Vi
 
 detector = vision.HandLandmarker.create_from_options(options)
 
-DATA_DIR = '../ManualAlphabetData'
-IMAGE_DIR = '../AlphabetImageData'
+DATA_DIR = '../ManualAlphabetData' #where handlandmarker data stored in pickle files go
+IMAGE_DIR = '../AlphabetImageData' #where image data goes for further checking
 
 if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
@@ -46,26 +46,19 @@ else:
         else:
             sys.exit()
 
-
 loop = 0
-Timer = 0
 
-Done = False
-Starting = False
-
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0) #get camera
 
 data = []
 labels = []
 imgName = []
 
-timerLoop = True
-
 #Loops until a specific theshold (300) of data is reached
 while True:
-    data_aux = []
+    data_aux = [] #list where hand landmarks get stored
 
-    ret, frame = cap.read()
+    ret, frame = cap.read() #get the frame from the camera
     height, width = frame.shape[:2]
     min_dim = min(height, width)
 
