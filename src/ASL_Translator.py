@@ -1,3 +1,5 @@
+#Main GUI of the app
+
 import sys
 from pathlib import Path
 import os
@@ -17,6 +19,8 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QTextEdit, QComboBox,QMe
                              QLabel, QWidget, QBoxLayout, QGridLayout, QVBoxLayout, QHBoxLayout, QPushButton, QFrame)
 from PyQt5.QtGui import QLinearGradient
 from PyQt5.QtGui import QFont, QPixmap, QImage
+
+#checks if folder is inside a EXE or in a testing environment
 
 def get_resource_path(relative_path):
     try:
@@ -63,6 +67,8 @@ def numpytoqimage(array: np.ndarray) -> QImage:
 
     return QImage()
 
+
+#BackGround Task that handles functions such as cropping and translating in order to not freeze execution of the main thread
 class Worker(QObject):
     imageFrameSignal = pyqtSignal(QPixmap)
     sendLetterSignal = pyqtSignal(str)
@@ -152,6 +158,7 @@ class Worker(QObject):
         self.translating = boolvalue
 
 
+#MainWindow
 class MainWindow(QMainWindow):
     videoSignal = pyqtSignal(int)
     sendCropSignal = pyqtSignal()
