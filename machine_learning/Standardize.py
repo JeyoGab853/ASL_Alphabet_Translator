@@ -1,3 +1,4 @@
+# This standardizes data to handle outliers
 import sys
 
 from sklearn.model_selection import train_test_split
@@ -7,13 +8,14 @@ import os
 import numpy as np
 import pickle
 
-Actions = os.listdir('./ManualAlphabetData')
+Actions = os.listdir('./ManualAlphabetData') # [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z]
 labelMap = {label:num for num,label in enumerate(Actions)}
 
 landmarks, labels = [],[]
 
-fileName = 'ProcessedAlphData/fingerSignStandard2.pickle'
+fileName = 'ProcessedAlphData/fingerSignStandard2.pickle' #name of the file
 
+#checks if filename already exists to avoid accidental overwriting
 if os.path.exists(fileName):
     print(f"file {fileName} already exists")
     while True:
@@ -26,6 +28,7 @@ if os.path.exists(fileName):
 def clamp(n, smallest, largest):
     return max(smallest, min(n, largest))
 
+#standardizes data to be inside a 300x300 dim range
 def standardize(landMarkData):
     # --------------------------------------- Resize Values
     targetDim = 300
@@ -73,6 +76,8 @@ def standardize(landMarkData):
 
     return standardizedLandMarks
 
+
+#iterates through the files to get hand landmarker values and its corresponding labels 
 for action in Actions:
     DataInAction = len(os.listdir(f'./ManualAlphabetData/{action}'))
     print(f'{action}:',DataInAction)
@@ -94,6 +99,7 @@ y = to_categorical(labels).astype(int)
 
 print(x.shape,y.shape)
 
+#splits values and labels into train and test sets
 x_train, x_val, y_train, y_val = train_test_split(x,y,test_size=0.1, shuffle=True, random_state=42, stratify=y)
 
 processedData = {'x_train':x_train,'x_val':x_val,
