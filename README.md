@@ -1,4 +1,5 @@
-# ASL_Alphabet_Translator
+# Showcase Video:
+https://github.com/user-attachments/assets/91e30947-ad01-47a3-b667-a3d4de2e18cc
 
 # Language used:
 Python 3.10
@@ -12,7 +13,4 @@ PyQt5 5.15.11,
 tensorflow 2.10.0,
 scikit-learn 1.2.0
 
-# Showcase Video:
-
-https://github.com/user-attachments/assets/91e30947-ad01-47a3-b667-a3d4de2e18cc
 
