@@ -1,3 +1,5 @@
+#Code for the Translator
+
 import os.path
 
 import numpy as np
@@ -13,6 +15,7 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.vision.drawing_utils import draw_landmarks
 from pathlib import Path
 
+#checks if the file is in a EXE or in testing
 def get_resource_path(relative_path):
     try:
         base_path = Path(sys._MEIPASS)
@@ -37,6 +40,7 @@ model = load_model(ModelPath)
 def clamp(n, smallest, largest):
     return max(smallest, min(n, largest))
 
+#detects if the hand is moving
 def detectmovement(dataSequence):
     # print(len(currentData),len(prevData))
     if len(dataSequence) < 3:
@@ -72,6 +76,7 @@ def detectmovement(dataSequence):
 
     return sum(cordDelta)
 
+#standardizes landmarks to be in the dimension of 300x300
 def standardize(landMarkData, frame):
     # --------------------------------------- Resize Values
     frameHeight, frameWidth = frame.shape[:2]
@@ -119,6 +124,8 @@ def standardize(landMarkData, frame):
         standardizedLandMarks.append(StandardY[idx])
 
     return standardizedLandMarks
+
+#translator class
 
 class Translator:
     def __init__(self):
