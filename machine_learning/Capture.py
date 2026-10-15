@@ -1,3 +1,5 @@
+#Code the captures and stores 300 sets of landmark data about a specific ASL alphabet in pickle file
+
 import os
 import sys
 import time
@@ -23,8 +25,9 @@ if not os.path.exists(DATA_DIR):
     os.makedirs(DATA_DIR)
 
 dataset_size = 300
-j = 'z'
+j = 'z' #what ASL letter the data is for (e.g: z)
 
+#checks if the directory of that specific letter is already made to avoid overwriting data
 if not os.path.exists(os.path.join(DATA_DIR,str(j))):
     os.makedirs(os.path.join(DATA_DIR,str(j)))
 else:
@@ -58,66 +61,7 @@ imgName = []
 
 timerLoop = True
 
-def clamp(n, smallest, largest):
-    return max(smallest, min(n, largest))
-
-def standardize(landMarkData):
-    # --------------------------------------- Resize Values
-    targetDim = 300
-
-    xCords = [val * 480 for idx, val in enumerate(landMarkData) if idx % 2 != 0]
-    yCords = [val * 480 for idx, val in enumerate(landMarkData) if idx % 2 == 0]
-
-    highestYVal = min(yCords)
-    lowestYVal = max(yCords)
-
-    leftMostXVal = min(xCords)
-    rightMostXVal = max(xCords)
-
-    Height = lowestYVal - highestYVal
-    Width = rightMostXVal - leftMostXVal
-
-    higherDim = max(Height,Width)
-    ScaleFactor = targetDim/higherDim
-
-    ResizedX = [(val - Width/2) * ScaleFactor + Width/2  for idx, val in enumerate(xCords)]
-    ResizedY = [(val - Height/2) * ScaleFactor + Width/2 for idx, val in enumerate(yCords)]
-
-    # ---------------------------------------
-
-    highestYVal = min(ResizedY)
-    leftMostXVal = min(ResizedX)
-
-    lowestYVal = max(ResizedY)
-    rightMostXVal = max(ResizedX)
-
-    middleY = targetDim/2 - (lowestYVal - highestYVal)/2
-    middleX = targetDim/2 - (rightMostXVal - leftMostXVal)/2
-
-    shiftedX = middleX if rightMostXVal < lowestYVal else 0
-    shiftedY = middleY if lowestYVal < rightMostXVal else 0
-
-    StandardX = [clamp(val - leftMostXVal,0,targetDim) + shiftedX  for idx, val in enumerate(ResizedX)]
-    StandardY = [clamp(val - highestYVal,0,targetDim) + shiftedY for idx, val in enumerate(ResizedY)]
-
-    StandardX = [val/targetDim for idx, val in enumerate(StandardX)]
-    StandardY = [val/targetDim for idx, val in enumerate(StandardY)]
-
-    standardizedLandMarks = []
-
-    for idx in range(len(StandardX)):
-        standardizedLandMarks.append(StandardX[idx])
-        standardizedLandMarks.append(StandardY[idx])
-
-    image2 = np.zeros((300, 300, 3), dtype=np.uint8)
-
-    for i in range(len(StandardX)):
-        point = (int(round(StandardX[i])), int(round(StandardY[i])))
-        cv2.circle(image2, point, radius=5, color=(0, 0, 255), thickness=-1)
-
-    cv2.imshow("Point2", image2)
-
-
+#Loops until a specific theshold (300) of data is reached
 while True:
     data_aux = []
 
@@ -128,6 +72,7 @@ while True:
     startX = int((width - min_dim) / 2)
     startY = int((height - min_dim) / 2)
 
+    #Cropping image for standardization
     croppedFrame = frame[startY: startY + min_dim,startX: startX + min_dim]
     bgrIMG = cv2.cvtColor(croppedFrame, cv2.COLOR_RGB2BGR)
 
@@ -145,13 +90,15 @@ while True:
 
     waitkey = cv2.waitKey(10)
 
+    #Collects data if q or o is pressed
     if waitkey == ord('q') or waitkey == ord('o'):
         if results.hand_landmarks:
             loop += 1
             print(f"Video{j}" + f"Frame{loop}")
 
+            #Stores image data for further checking after data collection to see if its valid
             cv2.imwrite(f'{IMAGE_DIR}/{j}/{j.upper()}_{loop}.jpg', croppedFrame)
-            #cv2.imwrite(f'{IMAGE_DIR}/{j}/{j.upper()}_{loop}.jpg', croppedFrame)
+            
             for hand_landmark in results.hand_landmarks:
                 for i in range(len(hand_landmark)):
                     LandMarkX = hand_landmark[i].x
@@ -173,6 +120,7 @@ cv2.destroyAllWindows()
 print(data)
 print(labels)
 
+#Stores data inside pickle file
 f = open(f"{DATA_DIR}/{j}/landmarkData{j.upper()}.pickle",'wb')
 pickle.dump({'data':data,'labels':labels,'imgName':imgName}, f)
 f.close()
